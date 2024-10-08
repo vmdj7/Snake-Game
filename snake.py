@@ -3,12 +3,14 @@ import sys
 import time
 import random
 
+# Speed of the game
 speed = 15
 
-# window sizes
+# Window sizes
 frame_size_x = 720
 frame_size_y = 480
 
+# Initialize pygame and check for errors
 check_errors = pygame.init()
 
 if check_errors[1] > 0:
@@ -16,46 +18,53 @@ if check_errors[1] > 0:
 else:
     print("Game Initialized Successfully")
 
-# initialize game window
+# Initialize game window
 pygame.display.set_caption("Snake Game")
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
-# colors
+# Define colors using RGB values
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 
+# Set up the game clock
 fps_controller = pygame.time.Clock()
-# one snake square size
+# Size of each snake segment
 square_size = 20
 
+# Initialize game variables
 def init_vars():
     global head_pos, snake_body, food_pos, food_spawn, score, direction
     direction = "RIGHT"
-    head_pos = [120, 60]
-    snake_body = [[120, 60]]
+    head_pos = [120, 60]  # Starting position of the snake's head
+    snake_body = [[120, 60]]  # Initial body of the snake
     food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
-                random.randrange(1, (frame_size_y // square_size)) * square_size]
-    food_spawn = True
-    score = 0
+                random.randrange(1, (frame_size_y // square_size)) * square_size]  # Random position for food
+    food_spawn = True  # Control food spawning
+    score = 0  # Initial score
 
+# Start the game with initialized variables
 init_vars()
 
+# Function to display the score on the screen
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
     score_surface = score_font.render("Score: " + str(score), True, color)
     score_rect = score_surface.get_rect()
+    # Position the score on the top left or center of the screen
     if choice == 1:
         score_rect.midtop = (frame_size_x / 10, 15)
     else:
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
-
+    
+    # Draw the score on the game window
     game_window.blit(score_surface, score_rect)
 
-# game loop
+# Main game loop
 while True:
+    # Handle user input for quitting or changing direction
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -70,6 +79,7 @@ while True:
             elif (event.key == pygame.K_RIGHT or event.key == ord("d")) and direction != "LEFT":
                 direction = "RIGHT"
 
+    # Update the position of the snake's head based on the direction
     if direction == "UP":
         head_pos[1] -= square_size
     elif direction == "DOWN":
@@ -79,6 +89,7 @@ while True:
     else:
         head_pos[0] += square_size
 
+    # Wrap the snake around the window edges
     if head_pos[0] < 0:
         head_pos[0] = frame_size_x - square_size
     elif head_pos[0] >= frame_size_x:
@@ -88,36 +99,39 @@ while True:
     elif head_pos[1] >= frame_size_y:
         head_pos[1] = 0
 
-    # eating apple
+    # Eating food logic: add to snake's body and increase score if food is eaten
     snake_body.insert(0, list(head_pos))
     if head_pos[0] == food_pos[0] and head_pos[1] == food_pos[1]:
         score += 1
         food_spawn = False
     else:
-        snake_body.pop()
+        snake_body.pop()  # Remove the last part of the snake's body to keep the length
 
-    # spawn food
+    # Spawn new food if it has been eaten
     if not food_spawn:
         food_pos = [random.randrange(1, (frame_size_x // square_size)) * square_size,
                     random.randrange(1, (frame_size_y // square_size)) * square_size]
         food_spawn = True
 
-    # GFX
+    # Draw everything: snake body and food
     game_window.fill(black)
     for pos in snake_body:
         pygame.draw.rect(game_window, green, pygame.Rect(
             pos[0] + 2, pos[1] + 2,
             square_size - 2, square_size))
 
+    # Draw the food
     pygame.draw.rect(game_window, red, pygame.Rect(food_pos[0],
                     food_pos[1], square_size, square_size))
 
-    # game over conditions
+    # Check if the snake has collided with itself
     for block in snake_body[1:]:
         if head_pos[0] == block[0] and head_pos[1] == block[1]:
-            init_vars()
+            init_vars()  # Restart the game if collision occurs
             break
 
+    # Display the score on the screen
     show_score(1, white, 'consolas', 20)
     pygame.display.update()
+    # Control the frame rate to set the speed of the game
     fps_controller.tick(speed)
