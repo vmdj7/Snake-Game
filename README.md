@@ -38,6 +38,13 @@ Execute the following command:
 -Avoid colliding with yourself to keep playing.
 -The snake wraps around screen edges, so use this to your advantage!
 
+## Screenshots
+![Game Image 4](sgame4.png)
+![Game Image 5](sgame5.png)
+![Game Image 22](sgame22.png)
+![Game Image 40](sgame40.png)
+
+
 
 
    
