@@ -44,6 +44,9 @@ Execute the following command:
 ![Game Image 22](sgame22.png)
 ![Game Image 40](sgame40.png)
 
+## Author
+Created by [Victor De Jesus](https://github.com/vmdj7)
+
 
 
 
